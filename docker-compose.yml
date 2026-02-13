@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Backend Service
+  backend:
+    image: techanalytica/tal-eschool-be:latest
+    container_name: tal-eschool-backend
+    ports:
+      - "37862:37862"
+    environment:
+      - NODE_ENV=production
+      - PORT=37862
+      - DATABASE_URL=postgresql://postgres:postgres@31.97.190.200:37860/postgres?schema=public
+      - JWT_SECRET=your-production-jwt-secret-change-this
+    restart: unless-stopped
+    networks:
+      - tal-eschool-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:37862/api"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Service
+  frontend:
+    image: techanalytica/tal-eschool-fe:latest
+    container_name: tal-eschool-frontend
+    ports:
+      - "37861:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://31.97.190.200:37862/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - tal-eschool-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:37861"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  tal-eschool-network:
+    driver: bridge

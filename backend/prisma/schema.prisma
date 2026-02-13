@@ -1,0 +1,176 @@
+// TAL-Eschool Prisma Schema
+// Multi-tenant SaaS School Management System
+
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// ============================================
+// TENANT MODEL (School)
+// ============================================
+
+model School {
+    id        String   @id @default(uuid())
+    name      String
+    slug      String   @unique // Used for subdomain: {slug}.xyz.com
+    email     String?
+    phone     String?
+    address   String?
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    users      User[]
+    teachers   Teacher[]
+    students   Student[]
+    classrooms Classroom[]
+    attendance Attendance[]
+
+    @@map("schools")
+}
+
+// ============================================
+// USER MODEL (Multi-role)
+// ============================================
+
+enum Role {
+    SUPER_ADMIN
+    SCHOOL_ADMIN
+    TEACHER
+}
+
+model User {
+    id        String   @id @default(uuid())
+    email     String   @unique
+    password  String // Hashed with bcrypt
+    name      String
+    role      Role     @default(TEACHER)
+    schoolId  String? // NULL for SUPER_ADMIN
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    school            School?      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+    teacher           Teacher?
+    markedAttendances Attendance[] @relation("MarkedBy")
+
+    @@index([schoolId])
+    @@index([email])
+    @@map("users")
+}
+
+// ============================================
+// TEACHER MODEL
+// ============================================
+
+model Teacher {
+    id          String   @id @default(uuid())
+    userId      String   @unique
+    name        String
+    designation String?
+    phone       String?
+    schoolId    String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    // Relations
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+    @@index([schoolId])
+    @@index([userId])
+    @@map("teachers")
+}
+
+// ============================================
+// CLASSROOM MODEL
+// ============================================
+
+model Classroom {
+    id        String   @id @default(uuid())
+    name      String // e.g., "Class 10"
+    section   String // e.g., "A"
+    schoolId  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    school   School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+    students Student[]
+
+    @@unique([name, section, schoolId]) // Unique classroom per school
+    @@index([schoolId])
+    @@map("classrooms")
+}
+
+// ============================================
+// STUDENT MODEL
+// ============================================
+
+model Student {
+    id          String    @id @default(uuid())
+    name        String
+    rollNumber  String
+    classroomId String
+    schoolId    String
+    email       String?
+    phone       String?
+    dateOfBirth DateTime?
+    address     String?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
+    // Relations
+    classroom  Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+    school     School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+    attendance Attendance[]
+
+    @@unique([rollNumber, schoolId]) // Unique roll number per school
+    @@index([schoolId])
+    @@index([classroomId])
+    @@index([schoolId, classroomId]) // Composite index for common queries
+    @@map("students")
+}
+
+// ============================================
+// ATTENDANCE MODEL
+// ============================================
+
+enum AttendanceStatus {
+    PRESENT
+    ABSENT
+    LATE
+}
+
+model Attendance {
+    id        String           @id @default(uuid())
+    studentId String
+    date      DateTime         @db.Date
+    status    AttendanceStatus @default(PRESENT)
+    remarks   String?
+    markedBy  String // User ID of the person marking attendance
+    schoolId  String
+    createdAt DateTime         @default(now())
+    updatedAt DateTime         @updatedAt
+
+    // Relations
+    student      Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    school       School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+    markedByUser User    @relation("MarkedBy", fields: [markedBy], references: [id])
+
+    @@unique([studentId, date, schoolId]) // One attendance per student per day per school
+    @@index([schoolId])
+    @@index([studentId])
+    @@index([date])
+    @@index([schoolId, date]) // Composite index for date-based queries
+    @@index([schoolId, studentId]) // Composite index for student-based queries
+    @@map("attendance")
+}

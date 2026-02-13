@@ -1,0 +1,884 @@
+{
+  "info": {
+    "name": "TAL-Eschool API",
+    "_postman_id": "tal-eschool-api-collection",
+    "description": "Complete API collection for TAL-Eschool Multi-tenant SaaS School Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "school_subdomain_url",
+      "value": "http://abc.localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "school_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "teacher_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "student_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "classroom_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "attendance_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login (Super Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', response.accessToken);",
+                  "    console.log('Super Admin Token:', response.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"superadmin@xyz.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (School Admin - ABC)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', response.accessToken);",
+                  "    if (response.user.schoolId) {",
+                  "        pm.collectionVariables.set('school_id', response.user.schoolId);",
+                  "    }",
+                  "    console.log('School Admin Token:', response.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@abc.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{school_subdomain_url}}/auth/login",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Teacher - ABC)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', response.accessToken);",
+                  "    console.log('Teacher Token:', response.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"teacher@abc.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{school_subdomain_url}}/auth/login",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"Password@123\",\n  \"name\": \"New User\",\n  \"role\": \"TEACHER\",\n  \"schoolId\": \"{{school_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Schools (Super Admin Only)",
+      "item": [
+        {
+          "name": "Create School",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('school_id', response.id);",
+                  "    console.log('School ID:', response.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo School\",\n  \"slug\": \"demo\",\n  \"email\": \"admin@demoschool.com\",\n  \"phone\": \"+1234567890\",\n  \"address\": \"123 Demo Street\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/schools",
+              "host": ["{{base_url}}"],
+              "path": ["schools"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Schools",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schools?page=1&limit=10&search=",
+              "host": ["{{base_url}}"],
+              "path": ["schools"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get School by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schools/{{school_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["schools", "{{school_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get School Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schools/{{school_id}}/stats",
+              "host": ["{{base_url}}"],
+              "path": ["schools", "{{school_id}}", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update School",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated School Name\",\n  \"email\": \"updated@school.com\",\n  \"phone\": \"+9876543210\",\n  \"address\": \"456 Updated Street\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/schools/{{school_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["schools", "{{school_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle School Active",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schools/{{school_id}}/toggle-active",
+              "host": ["{{base_url}}"],
+              "path": ["schools", "{{school_id}}", "toggle-active"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete School",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schools/{{school_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["schools", "{{school_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Teachers",
+      "item": [
+        {
+          "name": "Create Teacher",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('teacher_id', response.id);",
+                  "    console.log('Teacher ID:', response.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@abc.com\",\n  \"designation\": \"Mathematics Teacher\",\n  \"phone\": \"+1234567890\",\n  \"password\": \"Teacher@123\"\n}"
+            },
+            "url": {
+              "raw": "{{school_subdomain_url}}/teachers",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["teachers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Teachers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/teachers?page=1&limit=10&search=",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["teachers"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Teacher by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/teachers/{{teacher_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["teachers", "{{teacher_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Teacher",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Smith Updated\",\n  \"designation\": \"Senior Mathematics Teacher\",\n  \"phone\": \"+9876543210\"\n}"
+            },
+            "url": {
+              "raw": "{{school_subdomain_url}}/teachers/{{teacher_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["teachers", "{{teacher_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Teacher",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/teachers/{{teacher_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["teachers", "{{teacher_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Classrooms",
+      "item": [
+        {
+          "name": "Create Classroom",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('classroom_id', response.id);",
+                  "    console.log('Classroom ID:', response.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Class 12\",\n  \"section\": \"A\"\n}"
+            },
+            "url": {
+              "raw": "{{school_subdomain_url}}/classrooms",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["classrooms"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Classrooms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/classrooms?page=1&limit=10&search=",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["classrooms"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Classroom by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/classrooms/{{classroom_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["classrooms", "{{classroom_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Classroom",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Class 12\",\n  \"section\": \"B\"\n}"
+            },
+            "url": {
+              "raw": "{{school_subdomain_url}}/classrooms/{{classroom_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["classrooms", "{{classroom_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Classroom",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/classrooms/{{classroom_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["classrooms", "{{classroom_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Create Student",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('student_id', response.id);",
+                  "    console.log('Student ID:', response.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice Johnson\",\n  \"rollNumber\": \"ABC101\",\n  \"classroomId\": \"{{classroom_id}}\",\n  \"email\": \"alice@abc.com\",\n  \"phone\": \"+1234567890\",\n  \"dateOfBirth\": \"2008-05-15\",\n  \"address\": \"123 Student Street\"\n}"
+            },
+            "url": {
+              "raw": "{{school_subdomain_url}}/students",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["students"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Students",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/students?page=1&limit=10&search=&classroomId=",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["students"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "classroomId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Student by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/students/{{student_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["students", "{{student_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Student",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice Johnson Updated\",\n  \"phone\": \"+9876543210\",\n  \"address\": \"456 Updated Street\"\n}"
+            },
+            "url": {
+              "raw": "{{school_subdomain_url}}/students/{{student_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["students", "{{student_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Student",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/students/{{student_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["students", "{{student_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "Mark Attendance (Single)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('attendance_id', response.id);",
+                  "    console.log('Attendance ID:', response.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{student_id}}\",\n  \"date\": \"2026-02-13\",\n  \"status\": \"PRESENT\",\n  \"remarks\": \"On time\"\n}"
+            },
+            "url": {
+              "raw": "{{school_subdomain_url}}/attendance",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["attendance"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Attendance (Bulk)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"attendances\": [\n    {\n      \"studentId\": \"{{student_id}}\",\n      \"date\": \"2026-02-14\",\n      \"status\": \"PRESENT\",\n      \"remarks\": \"Present\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{school_subdomain_url}}/attendance/bulk",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["attendance", "bulk"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Attendance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/attendance?page=1&limit=10&date=&studentId=&classroomId=",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["attendance"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "date",
+                  "value": ""
+                },
+                {
+                  "key": "studentId",
+                  "value": ""
+                },
+                {
+                  "key": "classroomId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/attendance/stats?date=2026-02-13",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["attendance", "stats"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-02-13"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/attendance/{{attendance_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["attendance", "{{attendance_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Attendance",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"LATE\",\n  \"remarks\": \"Arrived 10 minutes late\"\n}"
+            },
+            "url": {
+              "raw": "{{school_subdomain_url}}/attendance/{{attendance_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["attendance", "{{attendance_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Attendance",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{school_subdomain_url}}/attendance/{{attendance_id}}",
+              "host": ["{{school_subdomain_url}}"],
+              "path": ["attendance", "{{attendance_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
