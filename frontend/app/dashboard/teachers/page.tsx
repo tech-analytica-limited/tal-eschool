@@ -44,11 +44,10 @@ import { Plus, Edit, Trash2 } from 'lucide-react';
 import type { Teacher } from '@/lib/types';
 
 const teacherSchema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  phone: z.string().min(10, 'Phone must be at least 10 characters'),
-  subject: z.string().min(2, 'Subject must be at least 2 characters'),
+  phone: z.string().min(10, 'Phone must be at least 10 characters').optional(),
+  designation: z.string().min(2, 'Designation must be at least 2 characters').optional(),
   password: z.string().min(6, 'Password must be at least 6 characters').optional(),
 });
 
@@ -67,11 +66,10 @@ export default function TeachersPage() {
   const form = useForm<TeacherFormValues>({
     resolver: zodResolver(teacherSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
+      name: '',
       email: '',
       phone: '',
-      subject: '',
+      designation: '',
       password: '',
     },
   });
@@ -126,11 +124,10 @@ export default function TeachersPage() {
   const handleEdit = (teacher: Teacher) => {
     setEditingTeacher(teacher);
     form.reset({
-      firstName: teacher.firstName,
-      lastName: teacher.lastName,
-      email: teacher.email,
-      phone: teacher.phone,
-      subject: teacher.subject,
+      name: teacher.name,
+      email: teacher.user?.email || teacher.email || '',
+      phone: teacher.phone || '',
+      designation: teacher.designation || '',
       password: '',
     });
   };
@@ -177,34 +174,19 @@ export default function TeachersPage() {
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="firstName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="John" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Last Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Doe" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="email"
@@ -227,7 +209,7 @@ export default function TeachersPage() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel>Phone (Optional)</FormLabel>
                       <FormControl>
                         <Input placeholder="+1234567890" {...field} />
                       </FormControl>
@@ -237,12 +219,12 @@ export default function TeachersPage() {
                 />
                 <FormField
                   control={form.control}
-                  name="subject"
+                  name="designation"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Subject</FormLabel>
+                      <FormLabel>Designation (Optional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="Mathematics" {...field} />
+                        <Input placeholder="Mathematics Teacher" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -306,7 +288,7 @@ export default function TeachersPage() {
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
-                  <TableHead>Subject</TableHead>
+                  <TableHead>Designation</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -314,11 +296,11 @@ export default function TeachersPage() {
                 {teachersData.data.map((teacher) => (
                   <TableRow key={teacher.id}>
                     <TableCell className="font-medium">
-                      {teacher.firstName} {teacher.lastName}
+                      {teacher.name}
                     </TableCell>
-                    <TableCell>{teacher.email}</TableCell>
-                    <TableCell>{teacher.phone}</TableCell>
-                    <TableCell>{teacher.subject}</TableCell>
+                    <TableCell>{teacher.user?.email || 'N/A'}</TableCell>
+                    <TableCell>{teacher.phone || 'N/A'}</TableCell>
+                    <TableCell>{teacher.designation || 'N/A'}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button

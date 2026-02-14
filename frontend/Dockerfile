@@ -1,8 +1,7 @@
 # Multi-stage build for Next.js frontend
 
 # Stage 1: Dependencies
-FROM node:20-alpine AS deps
-
+FROM node:20-slim AS deps
 
 WORKDIR /app
 
@@ -13,7 +12,7 @@ COPY package*.json ./
 RUN npm ci
 
 # Stage 2: Build
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
@@ -24,7 +23,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Set environment variable for build
-ENV NEXT_PUBLIC_API_URL=http://31.97.190.200:37862/api
+ENV NEXT_PUBLIC_API_URL=https://api-taleschool.taldev.xyz/api
 ENV NEXT_TELEMETRY_DISABLED=1
 # Skip TypeScript checks during build (they're already checked in development)
 ENV SKIP_TYPE_CHECK=true
@@ -33,18 +32,18 @@ ENV SKIP_TYPE_CHECK=true
 RUN npm run build
 
 # Stage 3: Production
-FROM node:20-alpine AS production
+FROM node:20-slim AS production
 
 WORKDIR /app
 
 # Set environment to production
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NEXT_PUBLIC_API_URL=http://31.97.190.200:37862/api
+ENV NEXT_PUBLIC_API_URL=https://api-taleschool.taldev.xyz/api
 
 # Create a non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN groupadd --system --gid 1001 nodejs
+RUN useradd --system --uid 1001 --gid nodejs nextjs
 
 # Copy necessary files from builder
 COPY --from=builder /app/public ./public

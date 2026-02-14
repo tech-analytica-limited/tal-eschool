@@ -18,29 +18,48 @@ export class TenantResolutionMiddleware implements NestMiddleware {
   constructor(private readonly prisma: PrismaService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    // Extract hostname (e.g., "abc.xyz.com" or "localhost:3000")
+    // Extract hostname (e.g., "abc.taleschool.taldev.xyz" or "localhost" or "31.97.190.200")
     const hostname = req.hostname;
 
-    // Split by dots
-    const parts = hostname.split('.');
+    // Base domain for production
+    const baseDomain = 'taleschool.taldev.xyz';
+    const apiDomain = 'api-taleschool.taldev.xyz';
 
-    // Check if it's a subdomain request
-    // For local development: localhost (no subdomain) or subdomain.localhost
-    // For production: xyz.com (no subdomain) or subdomain.xyz.com
-    
     let subdomain: string | null = null;
 
-    if (hostname === 'localhost' || hostname.startsWith('127.0.0.1')) {
-      // Local development - no subdomain (main domain)
-      subdomain = null;
-    } else if (parts.length >= 2 && parts[0] !== 'www') {
-      // Extract subdomain (first part)
-      subdomain = parts[0];
+    // Check if hostname is an IP address (skip tenant resolution)
+    const isIpAddress = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname) || hostname.includes(':');
+
+    // Check if it's localhost
+    const isLocalhost = hostname === 'localhost' || hostname.startsWith('127.0.0.1');
+
+    if (isIpAddress || isLocalhost) {
+      // IP address or localhost - no subdomain (main domain/Super Admin)
+      req.school = null;
+      req.schoolId = null;
+      return next();
+    }
+
+    // Check if hostname matches base domain or API domain exactly (no subdomain)
+    if (hostname === baseDomain || hostname === apiDomain) {
+      req.school = null;
+      req.schoolId = null;
+      return next();
+    }
+
+    // Check if hostname is a subdomain of base domain
+    if (hostname.endsWith(`.${baseDomain}`)) {
+      // Extract subdomain (everything before the base domain)
+      subdomain = hostname.substring(0, hostname.length - baseDomain.length - 1);
+      
+      // If subdomain contains dots, take only the first part (e.g., "abc" from "abc.subdomain")
+      if (subdomain.includes('.')) {
+        subdomain = subdomain.split('.')[0];
+      }
     }
 
     // If no subdomain, this is the main domain (Super Admin area)
     if (!subdomain) {
-      // Super Admin domain - no school context needed
       req.school = null;
       req.schoolId = null;
       return next();

@@ -64,22 +64,19 @@ export interface Teacher {
   id: string;
   userId: string;
   schoolId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  subject: string;
+  name: string;
+  designation?: string;
+  phone?: string;
   createdAt: string;
   updatedAt: string;
   user?: User;
 }
 
 export interface CreateTeacherRequest {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
-  phone: string;
-  subject: string;
+  phone?: string;
+  designation?: string;
   password: string;
 }
 

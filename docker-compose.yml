@@ -30,14 +30,14 @@ services:
       - "37861:3000"
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://31.97.190.200:37862/api
+      - NEXT_PUBLIC_API_URL=https://api-taleschool.taldev.xyz/api
     depends_on:
       - backend
     restart: unless-stopped
     networks:
       - tal-eschool-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:37861"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -1,5 +1,16 @@
 # 🚀 Ready to Deploy - Final Instructions
 
+## 🌐 Domain Configuration
+
+**Your application is configured for**: `taleschool.taldev.xyz`
+
+- **Main Domain**: https://taleschool.taldev.xyz (Super Admin)
+- **School Subdomains**: https://{school-slug}.taleschool.taldev.xyz
+
+For complete domain setup instructions, DNS configuration, and SSL setup, see **[DOMAIN_SETUP.md](DOMAIN_SETUP.md)**
+
+---
+
 ## ✅ Pre-Deployment Checklist
 
 All done! Your application is ready to deploy:
@@ -27,9 +38,16 @@ Navigate to your Portainer instance and go to **Stacks** > **Add Stack**.
 
 Once deployed, access your application at:
 
-**Frontend URL**: http://31.97.190.200:37861
+**Primary Access** (via domain - requires DNS setup):
+- **Main App**: https://taleschool.taldev.xyz
+- **ABC School**: https://abc.taleschool.taldev.xyz
+- **XYZ School**: https://xyz-school.taleschool.taldev.xyz
 
-**Backend API**: http://31.97.190.200:37862
+**Direct Access** (via IP:port - works immediately):
+- **Frontend**: http://31.97.190.200:37861
+- **Backend API**: http://31.97.190.200:37862
+
+**Note**: Domain access requires DNS configuration. See [DOMAIN_SETUP.md](DOMAIN_SETUP.md) for details.
 
 ## 🔑 Login Credentials
 
@@ -37,25 +55,25 @@ Once deployed, access your application at:
 - **Email**: superadmin@xyz.com
 - **Password**: Admin@123
 - **Access**: All schools and platform settings
-- **Domain**: xyz.com (for subdomain-based access)
+- **URL**: https://taleschool.taldev.xyz (or http://31.97.190.200:37861)
 
 ### ABC School Admin
 - **Email**: admin@abc.com
 - **Password**: Admin@123
 - **Access**: ABC School management
-- **Subdomain**: abc.xyz.com
+- **URL**: https://abc.taleschool.taldev.xyz
 
 ### ABC School Teacher
 - **Email**: teacher1@abc.com
 - **Password**: Teacher@123
 - **Access**: ABC School teaching features
-- **Subdomain**: abc.xyz.com
+- **URL**: https://abc.taleschool.taldev.xyz
 
 ### XYZ School Admin
 - **Email**: admin@xyz-school.com
 - **Password**: Admin@123
 - **Access**: XYZ School management
-- **Subdomain**: xyz-school.xyz.com
+- **URL**: https://xyz-school.taleschool.taldev.xyz
 
 ## 🗄️ Database
 
@@ -98,8 +116,9 @@ Both containers will show as **healthy** in Portainer once:
 
 ### Architecture
 - **Multi-tenant**: Uses school slugs for tenant isolation
-- **Subdomains**: Designed for subdomain-based access (abc.xyz.com, xyz-school.xyz.com)
-- **Current Setup**: IP-based access (subdomains won't work without DNS)
+- **Subdomains**: Designed for subdomain-based access (abc.taleschool.taldev.xyz)
+- **Domain Setup**: Requires DNS wildcard (*.taleschool.taldev.xyz) pointing to server
+- **Current Access**: Works via IP:port without DNS setup
 
 ### Troubleshooting
 
@@ -122,12 +141,13 @@ Both containers will show as **healthy** in Portainer once:
 2. Test login with provided credentials
 3. Explore multi-tenant features
 
-### For Production
-1. **Security**: Change all passwords
-2. **CORS**: Restrict to specific domains in `backend/src/main.ts`
-3. **DNS**: Configure subdomains for tenant access
-4. **SSL**: Add HTTPS/TLS certificates
-5. **Backups**: Setup PostgreSQL backup strategy
+### FDNS**: Configure wildcard DNS (*.taleschool.taldev.xyz → 31.97.190.200)
+2. **SSL**: Setup HTTPS/TLS certificates for taleschool.taldev.xyz
+3. **Reverse Proxy**: Setup Nginx/Traefik for domain routing (see [DOMAIN_SETUP.md](DOMAIN_SETUP.md))
+4. **Security**: Change all passwords
+5. **CORS**: Restrict to specific domains in `backend/src/main.ts`
+6. **Backups**: Setup PostgreSQL backup strategy
+7. **Backups**: Setup PostgreSQL backup strategy
 6. **Monitoring**: Add health checks and logging
 
 ## 📚 Additional Documentation
