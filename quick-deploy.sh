@@ -56,12 +56,12 @@ echo "📋 Step 3: Building Docker Images"
 echo "----------------------------------"
 
 echo "Building backend..."
-docker build -t techanalytica/tal-eschool-be:latest ./backend
+docker build -t --platform=linux/amd64 techanalytica/tal-eschool-be:latest ./backend
 docker push techanalytica/tal-eschool-be:latest
 
 echo ""
 echo "Building frontend..."
-docker build -t techanalytica/tal-eschool-fe:latest ./frontend
+docker build --platform=linux/amd64 -t techanalytica/tal-eschool-fe:latest ./frontend
 docker push techanalytica/tal-eschool-fe:latest
 
 echo ""
