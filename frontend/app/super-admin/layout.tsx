@@ -70,7 +70,7 @@ export default function SuperAdminLayout({
         <div className="flex h-16 items-center justify-between px-6">
           <div className="flex items-center gap-2">
             <Building2 className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold">TAL-Eschool</h1>
+            <h1 className="text-xl font-bold">EasySchool</h1>
             <span className="ml-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               Super Admin
             </span>
